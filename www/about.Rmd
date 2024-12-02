@@ -1,0 +1,47 @@
+---
+bibliography: references.bib
+output:
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+## About
+This app was created to exhibit the research that I did supervised by Dr. Sanjeena Dang at Carleton University.
+
+This application is governed by the
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
+
+You can use, modify and/or redistribute these codes under the terms of the GPL v3 license.
+
+This Shiny application requires the following packages: 
+
+  - Shiny,  @Chang2024
+  - dplyr, @Wickham2023
+  - ggplot, @Wickham2016
+  - shinydashboard, @Chang2021
+  - shinyFeedback, @Merlino2021
+  - shinyjs, @Attali2021
+  - mclust, @Scrucca2023
+  - GGally, @Schloerke2024
+  - clusterGeneration, @Qiu2023
+  - kmmeans, @Lithio2021
+  - mvtnorm, @Genz2009
+  - mice, @vanBuuren2011
+  - gtools, @Warnes2023
+  - data.table, @Barrett2024
+  - DT, @Xie2024
+  - e1071, @Meyer2024
+  - glue, @Hester2024
+  - MixPLN
+  
+
+Gabriel Holz's app was used as a template.
+
+### Contact:
+
+Kevin Giddings
+kevingiddings@cmail.carleton.ca
+
+### References:

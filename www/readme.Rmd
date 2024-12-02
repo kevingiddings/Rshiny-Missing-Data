@@ -1,0 +1,198 @@
+---
+title: "README"
+author: "Kevin Giddings"
+date: "2 Decemeber 2024"
+output: html_document
+bibliography: references2.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE,
+                      collapse = TRUE,
+                      message = FALSE,
+                      warning = FALSE,
+                      error = FALSE)
+```
+
+
+## Installation
+
+You can download the MixPLN package from my 
+[github](https://github.com/kevingiddings/MixPLN) if you run
+
+```{r}
+#devtools::install_github("kevingiddings/MixPLN")
+```
+without the comment. 
+
+This will also be uploaded on github... soon...
+
+## Introduction
+
+Hello! My name is Kevin Giddings! At the time of this app's creation I am a
+fourth year undergraduate student at Carleton University study math and
+statistics. This app is a brief summary of the capabilities of a new clustering
+method for missing data that I have developed under the supervision of Dr. 
+Sanjeena Dang, that builds off of a previous method by @Subedi2020
+
+In the field of biostatistics, clustering is a useful statistical method used to
+analyze large datasets. Clustering is the process of classifying observations 
+into groups based on characteristics such as clinical, genetic, behavioural, and
+environmental variables such that observations within a group have similar 
+characteristics compared to observations in different groups. By clustering the
+data, researchers hope to gain insights into similarities and differences 
+between and within groups, and the implications of these. For example, we could
+find that different gene expressions are associated with different reactions to
+medications, or that gut microbiomes are affected by the diets or environmental
+factors of individuals.
+
+However, clustering different biological data involves their unique complexities
+that are often not accounted for in standard clustering methods. One such 
+complexity that must be accounted for is the prevalence of missing values, 
+especially when dealing with proteomics data. In proteomics data, as much as 
+70-90\% of proteins will contain at least 1 missing value, leading to between 
+10-50\% of the data being missing @Kong2022 . Classical clustering 
+methods are unable to deal with this issue of missing data. One common method 
+that attempts to remedy the issue of missing values is by estimating what the 
+missing values could be and then imputing the estimated values. However, 
+@Cheng2023 found that ``real datasets [are] barely improved by most 
+imputation methods,'' and that the usefulness of these imputations is 
+inconsistent and varies from dataset to dataset.
+
+In their paper, @Silva2019 found that we can accurately model RNA sequencing
+and proteomics data as mixtures of multivariate Poisson log-normal distributions.
+@Subedi2020 then created a method to cluster according to these mixture
+distributions. I have then extended their method to be able to handle the issue
+of missing data.
+
+In order to evaluate the "goodness" of this method we consider 3 metrics: 
+
+- Ability to estimate the true number of clusters
+- Ability to assign observations to the correct cluster
+- Ability to estimate the parameters of these clusters
+
+To estimate the number of clusters the data is comprised of, we calculate the
+log likelihood for each clustering, and then use this likelihood to calculate the
+Bayesian information criterion (BIC). The number of clusters which maximizes BIC
+is then deemed the optimal number of clusters.
+
+To determine if we have good clustering of individuals, we employ the use of the
+adjusted Rand index. This is a scalar between -1 and 1 which measures the 
+performance of a clustering by comparing the method against randomly assigning
+each observation to a cluster. An ARIJ value near 0 indicates that the 
+clustering was no better than random, while a value near 1 indicates near 
+perfect recovery of the original clusters.
+
+Finally, to determine the accuracy of parameter estimation (not the focus of
+this app), we compare the estimated parameters for each cluster to their true
+values.
+
+The last 2 metrics are only possible on simulated data sets, as for real world
+data we do not know whop belongs to which cluster beforehand, nor do we know
+what "parameters" these clusters should have. However, if we can show good 
+performance on a wide set of simulations, we have good reason to believe in the
+results that we would obtain from analyzing real world data.
+
+
+## How to use the app
+
+When the app is started, you will start in the "Read Me" tab, as you already know
+:) 
+
+Additionally, upon loading the app an example data set is loaded in by default. 
+This can be seen in the "Data" tab. This Data tab will update with any changes 
+that you should make in the "Analysis" tab.
+
+The analysis tab is where most time will be spent. Upon opening this tab, a plot
+will load automatically, plotting out a pairs plot for the example data set.
+Unfortunately, the default colors have both clusters being grey, so it is hard
+to differentiate them at fist glance. This can be changed in the "Plotting
+Settings" section. Unfortunately, the plots to the colors of the bottom and side 
+of the pairs plot are not able to be changed in the app. Sorry!
+
+Currently, this tab only allows you to change the color associated with each 
+cluster. This page is dynamic to the number of clusters that we select in the
+earlier tab "Simulation Parameters." Try it out!
+
+I recommend not going above 12 clusters or you may find yourself in trouble.
+
+In the "Simulation Parameters" tab, we have the option of choosing values for
+the number of clusters, number of dimensions, and sample size of our simulation.
+Clusters and dimensions must be a positive whole number. I recommend staying 
+under 5 for clusters and 10 for dimensions.
+
+In the next tab, title "Cluster Parameters" we get to dictate the means of our
+simulated clusters for each dimension as well the covariance structure. One box
+asks for an alpha value, the larger this value is the less correlation there
+will be between the variables. You then have the option of selecting a lower
+and upper bound for the standard deviation of each cluster. R will uniformly
+generate std. dev. values from this range, and then use these values, along
+with alpha to calculate a covariance matrix for each cluster. In addition, there
+is a percent parameter that will be used to determine how much of the data set
+will, approximately, belong to each cluster.
+
+I recommend staying below a std. dev. value of 2.5-3, as well as having all mean
+values below 9-10. Larger numbers can create computational issues.
+
+In the next page we are asked if we want to ampute the data. I recommend coming
+back to this after running the clustering method at least once. On this page
+the user is asked if they want to ampute the data. If the users clicks the check
+box they will be asked for 2 values: a missing percentage, and a method by
+which to create missing values. The missing percentage determine the percent of
+observations that will have at least 1 missing value. If you divide this number 
+by 2, that is roughly the total percent of the data that is made missing. The 
+missing mechanism is passed to the ampute function from mice to detemine what
+pattern he missing values should follow. Pressing "Ampute!" will then change the 
+dataset to have missing values. See this in the Data tab! Unfortunately, ggplot
+does not play well with missing values, so the pairs plot may break if you 
+attempt to update it. This can be fixed by generating a new dataset, or loading
+the example data set. Pressing the ampute button with a data set that has 
+already been amputed will not do anything.
+
+Finally, the "Clustering Method" presents the user with the choice of 2 options
+by which to cluster the data. The first, default, option is MixPLN, standing for
+mixtures of Poisson log-normal. This is the method that I have developed. A 
+comparison method is also presented as an option to the user: KMM, standing for
+k missing means. This is a modified version of the classical k means algorithm
+that is able to handle missing values. Once the users clicks on the "Cluster data"
+button (for MixPLN they may need to wait up to 30 seconds depending on if there
+are many clusters/dimensions, for KMM results are typically very quick), the 
+user will then see a new set of boxes appear below that contain the information
+for each number of clusters attempted, as well as a summary of the results of the
+"optimal" clustering.
+
+## Summary of example data sets
+
+The first example data set that is included with this app is a simulated 2 
+cluster dataset, with 5 dimensions, and a sample size of 500. Cluster 1 is 61\%
+of the data, while cluster 2 is 39\%. The mean for cluster 1 is c(2,3,4,2,3),
+while the mean for cluster 2 is c(3,5,7,5,6). The variables are all moderately
+correlated with each other, with the off diagonals of the covariance matrix 
+being around 0.3-0.5 in absolute value. Finally, the standard deviations are 
+relatively small, being around 1-1.6.
+
+These clusters are quite separated, see the pairs plot, so both clustering 
+methods should be able to perform well, as long as the missing percentage is
+below 0.40.
+
+## How to extend this app
+
+There are still some bugs in the app that, despite my best efforts, I could not
+fix. Below is a non exhaustive list:
+
+- Colors of the side plots not changing
+- Pairs plot breaking after data is amputed
+- Formatting of mean values for MixPLN
+
+Additionally, more functionality can be added for comparing different clustering
+methods, as well as methods for imputing missing values. Imputation will allow
+a much wider variety of methods for clustering/analysis, this is why it is such
+a popular solution to real world data problems (although not always rigorous).
+
+## Appendix 1: Math
+
+<iframe src="math_for_missing.pdf" width="100%" height="1000px" style="border:none;"></iframe>
+
+
+## Apendix 2: References
+
