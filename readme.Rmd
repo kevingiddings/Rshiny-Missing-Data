@@ -2,7 +2,9 @@
 title: "README"
 author: "Kevin Giddings"
 date: "2 Decemeber 2024"
-output: html_document
+output:
+  html_document:
+    keep_md: true
 bibliography: references2.bib
 ---
 
